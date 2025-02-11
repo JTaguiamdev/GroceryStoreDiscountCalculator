@@ -1,0 +1,4 @@
+meow,1,5000
+banana,30,6
+apple,2,7
+wewe,85,3
