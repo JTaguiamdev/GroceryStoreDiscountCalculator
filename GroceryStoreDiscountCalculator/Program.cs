@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-namespace Grocery_Store_Discount_Calculator
+﻿namespace Grocery_Store_Discount_Calculator
 {
     public class Inventory
     {
