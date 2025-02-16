@@ -1,4 +1,8 @@
-﻿namespace Grocery_Store_Discount_Calculator
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace Grocery_Store_Discount_Calculator
 {
     public class Inventory
     {
@@ -13,14 +17,10 @@
 
         public void AddItem(string name, int quantity, decimal price)
         {
-            items.Add(new Item { ID = nextId.ToString("D4"), Name = name, Quantity = quantity, Price = price });
-            nextId++;
             SaveInventory();
         }
 
-        public void UpdateItem(string id, int quantity, decimal price)
         {
-            var item = items.Find(i => i.ID.Equals(id, StringComparison.OrdinalIgnoreCase));
             if (item != null)
             {
                 if (quantity == 0)
@@ -29,8 +29,8 @@
                 }
                 else
                 {
-                    item.Quantity = quantity;
-                    item.Price = price;
+                item.Quantity = quantity;
+                item.Price = price;
                 }
                 SaveInventory();
             }
@@ -40,9 +40,7 @@
             }
         }
 
-        public void DeleteItem(string id)
         {
-            var item = items.Find(i => i.ID.Equals(id, StringComparison.OrdinalIgnoreCase));
             if (item != null)
             {
                 items.Remove(item);
@@ -57,21 +55,14 @@
         public void DisplayAllItems()
         {
             Console.Clear();
-            Console.WriteLine("-------------------------------------------------------------------");
-            Console.WriteLine(" ID\tItem Name\t\tQuantity\t\tPrice");
-            Console.WriteLine("-------------------------------------------------------------------");
             foreach (var item in items)
             {
-                Console.WriteLine($"{item.ID}\t{item.Name}\t\t\t{item.Quantity}\t\t\t${item.Price:F2}");
             }
-            Console.WriteLine("-------------------------------------------------------------------");
             Console.WriteLine("Press any key to return to the Admin Interface...");
             Console.ReadKey();
         }
 
-        public Item? FindItemById(string id)
         {
-            return items.Find(i => i.ID.Equals(id, StringComparison.OrdinalIgnoreCase));
         }
 
         public void SaveInventory()
@@ -80,7 +71,6 @@
             {
                 foreach (var item in items)
                 {
-                    writer.WriteLine($"{item.ID},{item.Name},{item.Quantity},{item.Price}");
                 }
             }
         }
@@ -93,23 +83,18 @@
                 foreach (string line in lines)
                 {
                     string[] parts = line.Split(',');
-                    if (parts.Length == 4)
                     {
                         items.Add(new Item
                         {
-                            ID = parts[0],
-                            Name = parts[1],
-                            Quantity = int.Parse(parts[2]),
-                            Price = decimal.Parse(parts[3])
                         });
                     }
                 }
                 if (items.Count > 0)
                 {
                     nextId = items.Max(i => int.Parse(i.ID)) + 1;
-                }
             }
         }
+    }
     }
 
     public class Item
@@ -119,6 +104,8 @@
         public int Quantity { get; set; }
         public decimal Price { get; set; }
     }
+
+
 
     namespace Grocery_Store_Discount_Calculator
     {
@@ -131,13 +118,9 @@
                 while (true)
                 {
                     Console.Clear();
-                    Console.WriteLine("-------------------------------------------------------------------");
-                    Console.WriteLine("\n\t\t\tWelcome to the System");
-                    Console.WriteLine("\n-------------------------------------------------------------------");
                     Console.WriteLine("\n1. Admin");
                     Console.WriteLine("2. Cashier");
                     Console.WriteLine("3. Exit Program");
-                    Console.WriteLine("\n-------------------------------------------------------------------");
                     Console.Write("Please select an option: ");
                     string option = Console.ReadLine() ?? string.Empty;
 
@@ -167,15 +150,10 @@
                 do
                 {
                     Console.Clear();
-                    Console.WriteLine("-------------------------------------------------------------------");
-                    Console.WriteLine("\n\t\t\tAdmin Interface");
-                    Console.WriteLine("\n-------------------------------------------------------------------");
-                    Console.WriteLine("\n1. Add Item");
                     Console.WriteLine("2. Display All Items");
                     Console.WriteLine("3. Update Item");
                     Console.WriteLine("4. Delete Item");
                     Console.WriteLine("5. To Main Menu");
-                    Console.WriteLine("\n-------------------------------------------------------------------");
                     Console.Write("Please select an option: ");
                     choice = Console.ReadLine() ?? string.Empty;
 
@@ -209,20 +187,9 @@
             static void AddItem()
             {
                 Console.Clear();
-                Console.WriteLine("-------------------------------------------------------------------");
-                string itemName;
-                do
-                {
-                    Console.Write("\nEnter an item name: ");
-                    itemName = Console.ReadLine() ?? string.Empty;
-                    if (string.IsNullOrWhiteSpace(itemName))
-                    {
-                        Console.WriteLine("Invalid input. Item name cannot be blank.");
-                    }
-                } while (string.IsNullOrWhiteSpace(itemName));
+                Console.Write("\nEnter an item name: ");
 
                 // Check if the item already exists in the inventory
-                var existingItem = inventory.FindItemById(itemName);
                 if (existingItem != null)
                 {
                     Console.WriteLine("Exception: Item already exists in the inventory.");
@@ -255,47 +222,27 @@
             static void UpdateItem()
             {
                 Console.Clear();
-                Console.WriteLine("-------------------------------------------------------------------");
-                Console.Write("\nEnter the item ID to update: ");
-                string id = Console.ReadLine() ?? string.Empty;
-
-                var existingItem = inventory.FindItemById(id);
-                if (existingItem == null)
-                {
-                    Console.WriteLine("Item not found.");
-                    return;
-                }
 
                 Console.Write("Enter new quantity: ");
                 int quantity;
-                while (!int.TryParse(Console.ReadLine(), out quantity) || quantity < 0)
                 {
-                    Console.WriteLine("Invalid input. Please enter a valid non-negative integer for quantity.");
                     Console.Write("Enter new quantity: ");
                 }
 
                 Console.Write("Enter new price: ");
                 decimal price;
-                while (!decimal.TryParse(Console.ReadLine(), out price) || price <= 0)
                 {
-                    Console.WriteLine("Invalid input. Please enter a valid positive decimal for price.");
                     Console.Write("Enter new price: ");
-                    Console.WriteLine("\n-------------------------------------------------------------------");
                 }
 
-                inventory.UpdateItem(id, quantity, price);
             }
 
             static void DeleteItem()
             {
                 Console.Clear();
-                Console.WriteLine("-------------------------------------------------------------------");
-                Console.Write("\nEnter the item ID to delete: ");
-                string id = Console.ReadLine() ?? string.Empty;
 
                 try
                 {
-                    inventory.DeleteItem(id);
                 }
                 catch (Exception)
                 {
@@ -316,11 +263,7 @@
                 do
                 {
                     Console.Clear();
-                    Console.WriteLine("-------------------------------------------------------------------");
-                    Console.Write("\nEnter the item ID: ");
-                    string id = Console.ReadLine() ?? string.Empty;
 
-                    var existingItem = inventory.FindItemById(id);
                     if (existingItem != null)
                     {
                         int quantity;
@@ -343,7 +286,6 @@
                         totalCost += existingItem.Price * quantity;
 
                         // Check if the item already exists in the session list
-                        var sessionItem = sessionItems.Find(i => i.ID.Equals(existingItem.ID, StringComparison.OrdinalIgnoreCase));
                         if (sessionItem != null)
                         {
                             sessionItem.Quantity += quantity;
@@ -351,7 +293,6 @@
                         else
                         {
                             // Store the item details in the session list
-                            sessionItems.Add(new Item { ID = existingItem.ID, Name = existingItem.Name, Quantity = quantity, Price = existingItem.Price });
                         }
 
                         // Update the inventory
@@ -364,8 +305,8 @@
                         }
                         else
                         {
-                            // Save the updated inventory to the file
-                            inventory.SaveInventory();
+                        // Save the updated inventory to the file
+                        inventory.SaveInventory();
                         }
 
                         do
@@ -373,8 +314,6 @@
                             try
                             {
                                 Console.Write("Do you want to enter another item? (YES/NO): ");
-                                choice = (Console.ReadLine() ?? string.Empty).ToUpper();
-                                Console.WriteLine("\n-------------------------------------------------------------------");
                                 if (choice != "YES" && choice != "NO")
                                 {
                                     throw new ArgumentException("Invalid input. Please enter 'YES' or 'NO'.");
@@ -389,7 +328,6 @@
                     }
                     else
                     {
-                        Console.WriteLine("Item does not exist. Please enter a valid item ID.");
                         choice = "YES";
                     }
                 } while (choice != "NO");
@@ -402,20 +340,13 @@
                 finalCost = totalCost - discount;
 
                 Console.Clear();
-                Console.WriteLine("--------------------------------------------------------------------------------------------");
                 Console.WriteLine("\n\t\t\t\t\tRECEIPT");
-                Console.WriteLine("\n--------------------------------------------------------------------------------------------");
-                Console.WriteLine("ID\t\tItems\t\t\t\tQuantity\t\tPrice");
-                Console.WriteLine("--------------------------------------------------------------------------------------------");
                 foreach (var sessionItem in sessionItems)
                 {
-                    Console.WriteLine($"{sessionItem.ID}\t\t{sessionItem.Name}\t\t\t\t{sessionItem.Quantity}\t\t\t${sessionItem.Price:F2}");
                 }
-                Console.WriteLine("--------------------------------------------------------------------------------------------");
                 Console.WriteLine($"Total Cost:\t\t\t\t\t\t\t\t${totalCost:F2}");
                 Console.WriteLine($"Discount:\t\t\t\t\t\t\t\t-${discount:F2}");
                 Console.WriteLine($"Final Cost:\t\t\t\t\t\t\t\t${finalCost:F2}");
-                Console.WriteLine("--------------------------------------------------------------------------------------------");
 
                 Console.WriteLine("Press any key to return to the main menu...");
                 Console.ReadKey();
